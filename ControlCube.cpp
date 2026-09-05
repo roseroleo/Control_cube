@@ -137,6 +137,60 @@ void ControlCube::drawGlyph(const Glyph& glyph, byte layer)
     }
 }
 
+/*
+================
+PRUEBA
+================
+*/
+//--------------------------------------------
+// Dibuja un glifo PARADO en Y (plano XZ)
+//--------------------------------------------
+void ControlCube::drawGlyphXZ(const Glyph& glyph, byte y_pos)
+{
+    if (y_pos >= HEIGHT)
+        return;
+
+    clearCube();
+
+    for (byte z = 0; z < DEPTH; z++)
+    {
+        // z=0 abajo = última fila del glifo, z=7 arriba = primera fila
+        cube[z][y_pos] = glyph.rows[HEIGHT - 1 - z];
+    }
+}
+
+
+/*
+//--------------------------------------------
+// Animación de atrás hacia adelante
+//--------------------------------------------
+void ControlCube::animateGlyphBackToFront(const Glyph& glyph)
+{
+    // 7 = atrás, 0 = adelante
+    for (int y = HEIGHT - 1; y >= 0; y--)
+    {
+        drawGlyphAtY(glyph, (byte)y);
+        updateCube(); // o renderCube() como le tengas
+        //delay(delay_ms);
+    }
+}
+
+
+// Si quieres que se quede un momento al llegar al frente:
+void ControlCube::animateGlyphBackToFrontConPausa(const Glyph& glyph, uint16_t delay_ms, uint16_t pausa_final)
+{
+    for (int y = HEIGHT - 1; y >= 0; y--)
+    {
+        drawGlyphAtY(glyph, (byte)y);
+        updateCube();
+        delay(delay_ms);
+    }
+    delay(pausa_final);
+}
+
+//=================
+*/
+
 //--------------------------------------------
 // Envía una capa al hardware
 //--------------------------------------------

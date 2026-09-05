@@ -41,6 +41,9 @@ public:
     // Enciende un led en (z, y, x)
     void setVoxel(byte x, byte y, byte z);
 
+    // Dibuja un glifo en los ejes XZ
+    void drawGlyphXZ(const Glyph& glyph, byte y_pos);
+
     
 private:
 
