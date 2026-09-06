@@ -35,14 +35,24 @@ public:
     // Dibuja un glifo en cualquier capa
     void drawGlyph(const Glyph& glyph, byte layer);
 
+    // Dibuja un glifo en los ejes XZ
+    void drawGlyphXZ(const Glyph& glyph, byte y_pos);
+
     // Refresca una capa del cubo
     void updateDisplay();
 
     // Enciende un led en (z, y, x)
     void setVoxel(byte x, byte y, byte z);
 
-    // Dibuja un glifo en los ejes XZ
-    void drawGlyphXZ(const Glyph& glyph, byte y_pos);
+    // Apaga un led en (Z, Y, x)
+    void clearVoxel(byte x, byte y, byte z);
+
+    // Cambia el estado de un led
+    void toggleVoxel(byte x, byte y, byte z);
+
+    // Informa el estado de un led
+    bool getVoxel(byte x, byte y, byte z);
+
 
     
 private:
