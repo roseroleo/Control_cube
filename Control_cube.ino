@@ -1,5 +1,6 @@
 /* CONTROLCUBE */
-
+#include <WiFi.h>
+#include <ArduinoOTA.h>
 #include "ControlCube.h"
 #include "TestFont.h"
 #include "TestControlCube.h"
@@ -22,7 +23,7 @@ constexpr byte LATCH_PIN = 27;
 #define MOVE_GLYPH_BACK_TO_FRONT    7
 
 // Seleccionar aquí la prueba que queremos ejecutar
-const byte TEST = MOVE_GLYPH_BACK_TO_FRONT;
+const byte TEST = MOVE_GLYPH_BACK_TO_FRONT ;
 bool testInitialized = false;
 
 ControlCube cube(DATA_PIN, CLOCK_PIN, LATCH_PIN);
@@ -33,6 +34,12 @@ ControlCube cube(DATA_PIN, CLOCK_PIN, LATCH_PIN);
 
 void setup()
 { 
+    // Configuracion de OTA
+    Serial.begin(115200);
+    WiFi.begin("ESP32_WROOM", "LEROs20fe");
+    //ArduinoOTA.setHostname("ESP32_WROOM");
+    ArduinoOTA.begin();
+
     cube.begin();
     cube.clearCube();
     Serial.begin(115200);
@@ -45,8 +52,13 @@ void setup()
 
 void loop()
 {
+    // Mantener conexion WiFi
+    ArduinoOTA.handle();
+
+    // Refresco del cubo
     cube.updateDisplay();
 
+    // Menu
     if(!testInitialized)
     {
         switch (TEST)
