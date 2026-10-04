@@ -1,9 +1,14 @@
-#include "TestControlCube.h"
+#include "CubeAnimations.h"
 
-// =====================================================
-// PRUEBA ACTUAL EN DESARROLLO: Animación de perímetro
-// =====================================================
-void testCurrentFunction(ControlCube& cube)
+CubeAnimations::CubeAnimations(ControlCube& cubeInstance) : cube(cubeInstance)
+{
+
+}
+
+//--------------------------------------------
+// Animación linea vertical recorre el perimetro
+//--------------------------------------------
+void CubeAnimations::AnimatePerimeterLine(unsigned long speed)
 {
     // Coordenadas actuales de la columna
     static byte x = 0;
@@ -11,10 +16,9 @@ void testCurrentFunction(ControlCube& cube)
 
     // Control de tiempo no bloqueante con millis()
     static unsigned long lastStep = 0;
-    constexpr unsigned long STEP_TIME = 80; // Tiempo en ms entre cada paso (velocidad)
 
     // Si aún no ha pasado el tiempo, salimos para no interrumpir el refresco
-    if (millis() - lastStep < STEP_TIME)
+    if (millis() - lastStep < speed)
     {
         return;
     }
@@ -44,17 +48,6 @@ void testCurrentFunction(ControlCube& cube)
     {
         y--; // Borde izquierdo: del fondo hacia el frente
     }
+
 }
 
-// =====================================================
-// BORRADOR PARA PRUEBAS Y EXPERIMENTOS PROPIOS
-// =====================================================
-void testUserDraft(ControlCube& cube)
-{
-    cube.clearCube();
-    CubeGraphics gfx(cube);
-
-    // Espacio reservado para tus propias pruebas
-
-    cube.updateDisplay();
-}

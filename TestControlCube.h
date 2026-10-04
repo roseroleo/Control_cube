@@ -3,15 +3,13 @@
 
 #include <Arduino.h>
 #include "ControlCube.h"
+#include "CubeGraphics.h"
 
-void testSetVoxel(ControlCube& cube);
-void testClear(ControlCube& cube);
-void testGetVoxel(ControlCube& cube);
-void testToggle(ControlCube& cube);
-void testGlyph(ControlCube& cube);
+// Función de prueba activa para el desarrollo actual
+void testCurrentFunction(ControlCube& cube);
 
-void moveGlyphUp(ControlCube& cube);
-void moveGlyphBackToFront(ControlCube& cube);
+// Borrador para pruebas y experimentos propios
+void testUserDraft(ControlCube& cube);
 
 #endif
 

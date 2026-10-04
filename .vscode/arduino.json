@@ -1,0 +1,6 @@
+{
+    "sketch": "Control_cube.ino",
+    "board": "esp32:esp32:esp32",
+    "port": "COM3",
+    "configuration": "FlashFreq=80,UploadSpeed=921600"
+}

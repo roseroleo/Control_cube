@@ -211,8 +211,9 @@ byte ControlCube::bitMask(byte x)
 void ControlCube::setVoxel(byte x, byte y, byte z)
 {
     if (!validCoordinates(x, y, z))
+    {
         return;
-
+    }
     cube[z][y] |= bitMask(x);
 }
 
@@ -223,24 +224,37 @@ void ControlCube::setVoxel(byte x, byte y, byte z)
 void ControlCube::clearVoxel(byte x, byte y, byte z)
 {
     if (!validCoordinates(x, y, z))
+    {
         return;
-
+    }
     cube[z][y] &= ~bitMask(x);
 }
 
 //--------------------------------------------
-// Cambia el estado de un led
+// Invierte el estado de un led
 //--------------------------------------------
 
 void ControlCube::toggleVoxel(byte x, byte y, byte z)
 {
-    
+    if (!validCoordinates(x, y,z))
+    {
+        return;
+    }
+    cube[z][y] ^= bitMask(x);
 }
+
+
 //--------------------------------------------
 // Informa el estado de un led
 //--------------------------------------------
 
 bool ControlCube::getVoxel(byte x, byte y, byte z)
 {
+    if (!validCoordinates(x, y, z))
+    {
     return false;
+    }
+    // Comprueba mediante AND (&) si el bit está encendido (distinto de 0)
+    return (cube[z][y] & bitMask(x)) != 0;
 }
+
