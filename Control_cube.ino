@@ -4,9 +4,9 @@
  * ====================================================================
  * Consulta el archivo README.md para ver el registro completo de 
  * funciones implementadas, arquitectura de hardware y avance.
- */
-//#include <WiFi.h>
-//#include <ArduinoOTA.h>
+ */++
+
+#include "Communications.h" //Controla conexion WiFi
 #include "ControlCube.h"
 #include "CubeAnimations.h"
 #include "TestFont.h"
@@ -15,6 +15,8 @@
 constexpr byte DATA_PIN  = 13;
 constexpr byte CLOCK_PIN = 14;
 constexpr byte LATCH_PIN = 27;
+
+Communications comm;
 
 // =================================================
 // MODO DE PRUEBA
@@ -32,93 +34,46 @@ CubeAnimations anim(cube);
 
 void setup()
 { 
-    /*
-    // Configuracion de OTA (Bluetooth)
+    
+    // Configuracion de OTA (WiFi)
     Serial.begin(115200);
-    WiFi.begin("ESP32_WROOM", "LEROs20fe");
-    //ArduinoOTA.setHostname("ESP32_WROOM");
-    ArduinoOTA.begin();
-    */
+    comm.begin();
+    
+    // Inicializar cubo
     cube.begin();
     cube.clearCube();
     Serial.begin(115200);
 }
-
-
-// --------------------------------------------------
-// LOOP
-// LOOP ANTERIOR (Comentado como referencia histórica)
-// --------------------------------------------------
-/*
-void loop_anterior()
-{
-    // Refresco del cubo
-    cube.updateDisplay();
-
-    // Menu anterior con switch
-    if (!testInitialized)
-    {
-        switch (TEST)
-        {
-            case TEST_VOXEL:
-                testSetVoxel(cube);
-                break;
-            
-            case TEST_CLEAR:
-                testClear(cube);
-                break;
-
-            case TEST_GET_VOXEL:
-                testGetVoxel(cube);
-                break;
-
-            case TEST_TOGGLE:
-                testToggle(cube);
-                break;
-
-            case TEST_GLYPH:
-                testGlyph(cube);
-                break;
-            
-            case MOVE_GLYPH_UP:
-                moveGlyphUp(cube);
-                break;
-
-            case MOVE_GLYPH_BACK_TO_FRONT:
-                moveGlyphBackToFront(cube);
-                break;            
-            
-            case TEST_DRAW_LINE_X:
-                testDrawLineX(cube);
-                break;
-        }
-
-        testInitialized = true;
-    }
-}
-*/
 
 // --------------------------------------------------
 // NUEVO LOOP (Ejecución continua para animaciones)
 // --------------------------------------------------
 void loop()
 {
-    /*
     // Mantener conexion WiFi
-    ArduinoOTA.handle();
-    */
+    comm.handle();
 
-    // 1. Refresco continuo del hardware (multiplexado a alta frecuencia)
+    // Refresco continuo del hardware (multiplexado a alta frecuencia)
     cube.updateDisplay();
 
-    // 2. Ejecución continua de la prueba o animación activa
+    // Ejecución continua de la prueba o animación activa
     if (MODO_PRUEBA == 1)
     {
-        anim.AnimatePerimeterLine(); // Llamada directa a CubeAnimations
+        testCurrentFunction(cube); // Llamada directa a CubeAnimations
     }
+    // Ejecución de funcion en construcción
     else if (MODO_PRUEBA == 2)
     {
-        testUserDraft(cube);
+        testUserDraft(cube); 
+    }
+    // Prueba directa de funcion construida y aprobada
+    else if (MODO_PRUEBA == 3)
+    {
+        //anim.AnimateCubeReduce2();
+        
+        //cube.drawGlyphXZ(LETTERS[5], 3);
+
+        cube.AnimateGlyphBackToFront(LETTERS[4]);
     }
 }
 

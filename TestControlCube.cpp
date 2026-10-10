@@ -3,15 +3,71 @@
 // =====================================================
 // PRUEBA ACTUAL EN DESARROLLO: Animación de perímetro
 // =====================================================
+
+// --- Estructura de cada gota ---
+struct Drop {
+  byte x;
+  byte y;
+  byte z;
+  byte speed;              // velocidad de caída (ms entre pasos)
+  unsigned long lastMove;  // control de tiempo individual
+};
+
+// --- Función principal de lluvia ---
 void testCurrentFunction(ControlCube& cube)
 {
-    // Coordenadas actuales de la columna
-    static byte x = 0;
-    static byte y = 0;
+  const byte dd = 35;  
+  static Drop drops[dd]; // arreglo de ## gotas
+  static bool initialized = false;
+
+  // Inicializar gotas solo una vez
+  if (!initialized) {
+    for (int i = 0; i < dd; i++) {
+      drops[i].x = random(8);
+      drops[i].y = random(8);
+      drops[i].z = 7;
+      drops[i].speed = random(50, 150);   // Cada gota con velocidad distinta
+      drops[i].lastMove = millis();
+    }
+    initialized = true;
+  }
+
+  // Limpiar cubo antes de dibujar
+  cube.clearCube();
+
+  // Actualizar cada gota
+  for (int i = 0; i < dd; i++) {
+    cube.setVoxel(drops[i].x, drops[i].y, drops[i].z);
+
+    if (millis() - drops[i].lastMove >= drops[i].speed) {
+      drops[i].lastMove = millis();
+
+      if (drops[i].z > 0) {
+        drops[i].z--;
+      } else {
+        // reinicia arriba con nueva posición y velocidad
+        drops[i].x = random(8);
+        drops[i].y = random(8);
+        drops[i].z = 7;
+        drops[i].speed = random(50, 150);
+      }
+    }
+  }
+
+  //cube.updateDisplay();
+}
+
+
+// =====================================================
+// BORRADOR PARA PRUEBAS Y EXPERIMENTOS PROPIOS
+// =====================================================
+void testUserDraft(ControlCube& cube)
+{
+
 
     // Control de tiempo no bloqueante con millis()
     static unsigned long lastStep = 0;
-    constexpr unsigned long STEP_TIME = 80; // Tiempo en ms entre cada paso (velocidad)
+    constexpr unsigned long STEP_TIME = 100; // velocidad de caida de gotas
 
     // Si aún no ha pasado el tiempo, salimos para no interrumpir el refresco
     if (millis() - lastStep < STEP_TIME)
@@ -19,42 +75,24 @@ void testCurrentFunction(ControlCube& cube)
         return;
     }
     lastStep = millis();
-
-    // 1. Borramos el fotograma anterior
+   
     cube.clearCube();
 
-    // 2. Dibujamos la columna vertical en la posición actual
-    CubeGraphics gfx(cube);
-    gfx.drawLineZ(x, y);
+    // GOTAS DE LLUVIA
+    randomSeed(analogRead(A0)); // Iniciamos una semilla para random
+    byte drops = 32; // Número de gotas
+    static byte z = 0;
 
-    // 3. Calculamos la siguiente posición del perímetro en sentido horario
-    if (y == 0 && x < 7)
+    if (z < 8)
     {
-        x++; // Borde frontal: de izquierda a derecha
+        for (byte i = 0;i < drops; i++)
+        {
+            byte x = random(7);
+            byte y = random(7);
+            cube.setVoxel(x, y, 7-z); 
+        }
+        z++;
+        //cube.updateDisplay();    
     }
-    else if (x == 7 && y < 7)
-    {
-        y++; // Borde derecho: del frente hacia el fondo
-    }
-    else if (y == 7 && x > 0)
-    {
-        x--; // Borde posterior: de derecha a izquierda
-    }
-    else if (x == 0 && y > 0)
-    {
-        y--; // Borde izquierdo: del fondo hacia el frente
-    }
-}
-
-// =====================================================
-// BORRADOR PARA PRUEBAS Y EXPERIMENTOS PROPIOS
-// =====================================================
-void testUserDraft(ControlCube& cube)
-{
-    cube.clearCube();
-    CubeGraphics gfx(cube);
-
-    // Espacio reservado para tus propias pruebas
-
-    cube.updateDisplay();
+    //cube.updateDisplay();
 }

@@ -1,6 +1,6 @@
 {
     "sketch": "Control_cube.ino",
-    "board": "esp32:esp32:esp32",
+    "board": "esp32:esp32:esp32da",
     "port": "COM3",
-    "configuration": "FlashFreq=80,UploadSpeed=921600"
+    "configuration": "PartitionScheme=default,CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=115200,LoopCore=1,EventsCore=1,DebugLevel=none,EraseFlash=none"
 }

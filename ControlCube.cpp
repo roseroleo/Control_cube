@@ -107,7 +107,7 @@ bool ControlCube::validCoordinates(byte x, byte y, byte z)
 //================
 
 //--------------------------------------------
-// Dibuja un glifo
+// Dibuja un glifo en la capa 0
 //--------------------------------------------
 
 void ControlCube::drawGlyph(const Glyph& glyph)
@@ -139,7 +139,7 @@ void ControlCube::drawGlyph(const Glyph& glyph, byte layer)
 
 
 //--------------------------------------------
-// Dibuja un glifo PARADO en el plano XZ
+// Dibuja un glifo en el plano XZ
 //--------------------------------------------
 void ControlCube::drawGlyphXZ(const Glyph& glyph, byte y_pos)
 {
