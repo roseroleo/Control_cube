@@ -1,4 +1,5 @@
 #include "CubeAnimations.h"
+#include "TestFont.h"
 //#include "ControlCube.h"
 
 CubeAnimations::CubeAnimations(ControlCube& cubeInstance) : cube(cubeInstance)
@@ -6,28 +7,33 @@ CubeAnimations::CubeAnimations(ControlCube& cubeInstance) : cube(cubeInstance)
 
 }
 
-void CubeAnimations::AnimateGlyphBackToFront(Glyph& glyph)
+// Control de tiempo no bloqueante con millis()
+bool CubeAnimations::isTimeUp(unsigned long speed)
+{
+    if (millis() - lastStep < speed)
+    {
+        return false;
+    }
+    lastStep = millis();
+    return true;
+}
+
+void CubeAnimations::AnimateGlyphBackToFront(Glyph& glyph, unsigned long speed)
 {
     static byte y = 7;
 
-    // Control de tiempo no bloqueante con millis()
-    static unsigned long lastStep = 0;
-
-    // Si aún no ha pasado el tiempo, salimos para no interrumpir el refresco
-    if (millis() - lastStep < 80)
+    if (!isTimeUp(speed))
     {
         return;
     }
-    lastStep = millis();
 
     // Borramos el fotograma anterior
     cube.clearCube();
     
-    if (y >= 0)
+    // Dibujamos el glyph en la capa Y actual
+    cube.drawGlyphXZ(glyph, y);
+    if (y > 0)
     {
-        // Dibujamos el glyph en la capa Y
-        cube.drawGlyph(LETTERS[5], y);
-        cube.
         y--;
     }
     else
@@ -45,15 +51,10 @@ void CubeAnimations::AnimatePerimeterLine(unsigned long speed)
     static byte x = 0;
     static byte y = 0;
 
-    // Control de tiempo no bloqueante con millis()
-    static unsigned long lastStep = 0;
-
-    // Si aún no ha pasado el tiempo, salimos para no interrumpir el refresco
-    if (millis() - lastStep < speed)
+    if (!isTimeUp(speed))
     {
         return;
     }
-    lastStep = millis();
 
     // Borramos el fotograma anterior
     cube.clearCube();
@@ -93,15 +94,10 @@ void CubeAnimations::AnimateCubeReduce(unsigned long speed)
     byte z = 7;
     static int w = 7; // Define el ancho del cubo
 
-    // Control de tiempo no bloqueante con millis()
-    static unsigned long lastStep = 0;
-
-    // Si aún no ha pasado el tiempo, salimos para no interrumpir el refresco
-    if (millis() - lastStep < speed)
+    if (!isTimeUp(speed))
     {
         return;
     }
-    lastStep = millis();
 
     // 1. Borramos el fotograma anterior
     cube.clearCube(); 
@@ -152,15 +148,10 @@ void CubeAnimations::AnimateCubeGrow(unsigned long speed)
     byte z = 0;
     static int w = 0; // Define el ancho del cubo
 
-    // Control de tiempo no bloqueante con millis()
-    static unsigned long lastStep = 0;
-
-    // Si aún no ha pasado el tiempo, salimos para no interrumpir el refresco
-    if (millis() - lastStep < speed)
+    if (!isTimeUp(speed))
     {
         return;
     }
-    lastStep = millis();
 
     // 1. Borramos el fotograma anterior
     cube.clearCube(); 
@@ -229,15 +220,10 @@ void CubeAnimations::AnimateCubeReduce2(unsigned long speed)
     byte z;
     static int w = 7; // Define el ancho del cubo
 
-    // Control de tiempo no bloqueante con millis()
-    static unsigned long lastStep = 0;
-
-    // Si aún no ha pasado el tiempo, salimos para no interrumpir el refresco
-    if (millis() - lastStep < speed)
+    if (!isTimeUp(speed))
     {
         return;
     }
-    lastStep = millis();
 
     // 1. Borramos el fotograma anterior
     cube.clearCube(); 
@@ -278,3 +264,64 @@ void CubeAnimations::AnimateCubeReduce2(unsigned long speed)
     }
 }
 
+
+//--------------------------------------------
+// Animación lluvia
+//--------------------------------------------
+
+
+
+// --- Función principal de lluvia ---
+void CubeAnimations::AnimateRain()
+{
+
+    // --- Estructura de cada gota ---
+struct Drop {
+  byte x;
+  byte y;
+  byte z;
+  byte speed;              // velocidad de caída (ms entre pasos)
+  unsigned long lastMove;  // control de tiempo individual
+};
+
+
+  const byte dd = 35;  
+  static Drop drops[dd]; // arreglo de ## gotas
+  static bool initialized = false;
+
+  // Inicializar gotas solo una vez
+  if (!initialized) {
+    for (int i = 0; i < dd; i++) {
+      drops[i].x = random(8);
+      drops[i].y = random(8);
+      drops[i].z = 7;
+      drops[i].speed = random(50, 150);   // Cada gota con velocidad distinta
+      drops[i].lastMove = millis();
+    }
+    initialized = true;
+  }
+
+  // Limpiar cubo antes de dibujar
+  cube.clearCube();
+
+  // Actualizar cada gota
+  for (int i = 0; i < dd; i++) {
+    cube.setVoxel(drops[i].x, drops[i].y, drops[i].z);
+
+    if (millis() - drops[i].lastMove >= drops[i].speed) {
+      drops[i].lastMove = millis();
+
+      if (drops[i].z > 0) {
+        drops[i].z--;
+      } else {
+        // reinicia arriba con nueva posición y velocidad
+        drops[i].x = random(8);
+        drops[i].y = random(8);
+        drops[i].z = 7;
+        drops[i].speed = random(50, 150);
+      }
+    }
+  }
+
+  //cube.updateDisplay();
+}

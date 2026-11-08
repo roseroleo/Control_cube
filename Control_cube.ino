@@ -4,7 +4,7 @@
  * ====================================================================
  * Consulta el archivo README.md para ver el registro completo de 
  * funciones implementadas, arquitectura de hardware y avance.
- */++
+ */
 
 #include "Communications.h" //Controla conexion WiFi
 #include "ControlCube.h"
@@ -23,7 +23,7 @@ Communications comm;
 // 1 = Animación aprobada (CubeAnimations)
 // 2 = Borrador propio (TestControlCube)
 // =================================================
-const byte MODO_PRUEBA = 1;
+const byte MODO_PRUEBA = 3;              //<<<<<<<<<< CAMBIAR AQUI EL #
 
 ControlCube cube(DATA_PIN, CLOCK_PIN, LATCH_PIN);
 CubeAnimations anim(cube);
@@ -57,7 +57,7 @@ void loop()
     cube.updateDisplay();
 
     // Ejecución continua de la prueba o animación activa
-    if (MODO_PRUEBA == 1)
+    if (MODO_PRUEBA == 1) 
     {
         testCurrentFunction(cube); // Llamada directa a CubeAnimations
     }
@@ -69,11 +69,14 @@ void loop()
     // Prueba directa de funcion construida y aprobada
     else if (MODO_PRUEBA == 3)
     {
+        //anim.AnimatePerimeterLine();
+        //anim.AnimateCubeReduce();
         //anim.AnimateCubeReduce2();
+        //anim.AnimateCubeGrow();
+        //anim.AnimateRain();
+        Glyph glyph = LETTERS[1];
+        anim.AnimateGlyphBackToFront(glyph);
         
-        //cube.drawGlyphXZ(LETTERS[5], 3);
-
-        cube.AnimateGlyphBackToFront(LETTERS[4]);
     }
 }
 

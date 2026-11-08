@@ -8,6 +8,10 @@ class CubeAnimations
 {
     private:
         ControlCube& cube;
+        unsigned long lastStep = 0;
+
+        // Control de tiempo no bloqueante con millis()
+        bool isTimeUp(unsigned long speed);
 
     public:
         // Constructor que recibe el cubo físico
@@ -26,8 +30,10 @@ class CubeAnimations
         void AnimateCubeReduce2(unsigned long speed = 150);
 
         // Animación letras de fondo a frente
-        void AnimateGlyphBackToFront(Glyph& glyph);
+        void AnimateGlyphBackToFront(Glyph& glyph, unsigned long speed = 80);
 
+        // Animacion lluvia
+        void AnimateRain();
 
 };
 
