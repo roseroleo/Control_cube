@@ -1,7 +1,14 @@
-/* CONTROLCUBE */
-#include <WiFi.h>
-#include <ArduinoOTA.h>
+/* 
+ * ====================================================================
+ *       PROYECTO CUBO LED 8x8x8 (ESP32) — Control_cube.ino
+ * ====================================================================
+ * Consulta el archivo README.md para ver el registro completo de 
+ * funciones implementadas, arquitectura de hardware y avance.
+ */
+
+#include "Communications.h" //Controla conexion WiFi
 #include "ControlCube.h"
+#include "CubeAnimations.h"
 #include "TestFont.h"
 #include "TestControlCube.h"
 
@@ -9,24 +16,17 @@ constexpr byte DATA_PIN  = 13;
 constexpr byte CLOCK_PIN = 14;
 constexpr byte LATCH_PIN = 27;
 
+Communications comm;
+
 // =================================================
-// MENU - PANEL DE PRUEBAS
+// MODO DE PRUEBA
+// 1 = Animación aprobada (CubeAnimations)
+// 2 = Borrador propio (TestControlCube)
 // =================================================
-
-#define TEST_VOXEL                  1
-#define TEST_CLEAR                  2
-#define TEST_GET_VOXEL              3
-#define TEST_TOGGLE                 4
-#define TEST_GLYPH                  5
-
-#define MOVE_GLYPH_UP               6
-#define MOVE_GLYPH_BACK_TO_FRONT    7
-
-// Seleccionar aquí la prueba que queremos ejecutar
-const byte TEST = MOVE_GLYPH_BACK_TO_FRONT ;
-bool testInitialized = false;
+const byte MODO_PRUEBA = 3;              //<<<<<<<<<< CAMBIAR AQUI EL #
 
 ControlCube cube(DATA_PIN, CLOCK_PIN, LATCH_PIN);
+CubeAnimations anim(cube);
 
 // --------------------------------------------------
 // SETUP
@@ -34,65 +34,49 @@ ControlCube cube(DATA_PIN, CLOCK_PIN, LATCH_PIN);
 
 void setup()
 { 
-    // Configuracion de OTA
+    
+    // Configuracion de OTA (WiFi)
     Serial.begin(115200);
-    WiFi.begin("ESP32_WROOM", "LEROs20fe");
-    //ArduinoOTA.setHostname("ESP32_WROOM");
-    ArduinoOTA.begin();
-
+    comm.begin();
+    
+    // Inicializar cubo
     cube.begin();
     cube.clearCube();
     Serial.begin(115200);
 }
 
-
 // --------------------------------------------------
-// LOOP
+// NUEVO LOOP (Ejecución continua para animaciones)
 // --------------------------------------------------
-
 void loop()
 {
     // Mantener conexion WiFi
-    ArduinoOTA.handle();
+    comm.handle();
 
-    // Refresco del cubo
+    // Refresco continuo del hardware (multiplexado a alta frecuencia)
     cube.updateDisplay();
 
-    // Menu
-    if(!testInitialized)
+    // Ejecución continua de la prueba o animación activa
+    if (MODO_PRUEBA == 1) 
     {
-        switch (TEST)
-        {
-            case TEST_VOXEL:
-                testSetVoxel(cube);
-                break;
-            
-            case TEST_CLEAR:
-                testClear(cube);
-                break;
-
-            case TEST_GET_VOXEL:
-                testGetVoxel(cube);
-                break;
-
-            case TEST_TOGGLE:
-                testToggle(cube);
-                break;
-
-            case TEST_GLYPH:
-                testGlyph(cube);
-                break;
-            
-            case MOVE_GLYPH_UP:
-                moveGlyphUp(cube);
-                break;
-
-            case MOVE_GLYPH_BACK_TO_FRONT:
-                moveGlyphBackToFront(cube);
-                break;            
-            
-            testInitialized = true;
-        }
+        testCurrentFunction(cube); // Llamada directa a CubeAnimations
+    }
+    // Ejecución de funcion en construcción
+    else if (MODO_PRUEBA == 2)
+    {
+        testUserDraft(cube); 
+    }
+    // Prueba directa de funcion construida y aprobada
+    else if (MODO_PRUEBA == 3)
+    {
+        //anim.AnimatePerimeterLine();
+        //anim.AnimateCubeReduce();
+        //anim.AnimateCubeReduce2();
+        //anim.AnimateCubeGrow();
+        //anim.AnimateRain();
+        Glyph glyph = LETTERS[1];
+        anim.AnimateGlyphBackToFront(glyph);
+        
     }
 }
 
